@@ -1,10 +1,10 @@
-= Auth-Key =
+# Auth-Key
 
 Auth-Key is an API authentication scheme that is designed to be simple and flexible. It is based on services like Amazon S3 and Azure and uses similar procedures and terminology.
 
-== Basic principles ==
+## Basic principles
 
-When making an HTTP request, two additional HTTP header are sent: one is the authentication header that contains authentication details of the sender (client), while the other is a [[Timestamp|Timestamp]]. The server then uses these details to decide whether to allow the request or not.
+When making an HTTP request, two additional HTTP header are sent: one is the authentication header that contains authentication details of the sender (client), while the other is a [Timestamp][timestamp]. The server then uses these details to decide whether to allow the request or not.
 
 To make this work, the client must have been issued with an **[[AccountId|AccountId]]** and a **[[SecretKey|SecretKey]]** which it uses to construct the authentication header. This header contains the AccountId and a **[[Signature|Signature]]** of other header elements, computed by using the SecretKey.
 
@@ -64,11 +64,5 @@ Please see the [[StringToSign|StringToSign]] section for more details.
 \\
 ----
 
-== Pages ==
-*[[AccountId|AccountId]]
-*[[SecretKey|SecretKey]]
-*[[Signature|Signature]]
-*[[XHeaders|X-Headers]]
-*[[XMacDate|Date header]]
-
+  [timestamp]: timestamp.md
 

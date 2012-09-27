@@ -1,6 +1,17 @@
 {
 
   "name": "authkey/authkey",
+  "description": "An HTTP API authentication scheme ",
+  "keywords": ["api", "key", "mac", "auth"],
+  "homepage": "http://github.com/johnstevenson/authkey",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "John Stevenson",
+      "email": "john-stevenson@blueyonder.co.uk"
+    }
+  ],
 
   "require": {
     "php": ">=5.3.0"
@@ -8,12 +19,6 @@
 
   "autoload": {
     "psr-0": {"AuthKey": "src/"}
-  },
-
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.0-dev"
-    }
   }
 
 }

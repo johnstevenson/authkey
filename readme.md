@@ -4,7 +4,7 @@
 
 A PHP implementation of the [Auth-Key][Auth-Key] authentication scheme.
 
-### Contents
+## Contents
 * [About](#About)
 * [Installation](#Installation)
 * [Usage](#Usage)
@@ -72,10 +72,10 @@ If you downloaded the library through [composer][composer] then you must add the
 ```
 Otherwise you must point a PSR-0 autoloader to the `src` directory so that the classes are automatically included. Full usage [documentation][wiki] can be found in the wiki.
 
-* **[Client usage][client]**
-* **[Server usage][server]**
-* **[Build your own][authkey]**
-* **[Extend the library][extending]**
+* [Client usage][client]
+* [Server usage][server]
+* [Build your own][authkey]
+* [Extend the library][extending]
 
 <a name="Example"></a>
 ## Example

@@ -29,7 +29,7 @@
 
   try
   {
-    $Server->receive($handlers);
+    $Server->receive();
   }
   catch (Exception $e)
   {

@@ -44,13 +44,13 @@ class Auth
   /**
   * Creates signed request headers for the client
   *
-  * @param array $account Key-value (id, key)
+  * @param array $credentials Key-value (id, key)
   * @param string $method The request method (GET, POST etc)
   * @param string $url The complete url of the resource (http:://host/path?query)
   * @param array $xheaders Key-value of x-headers
   * @return mixed Array list of request headers or false
   */
-  public function forRequest(array $account, $method, $url, array $xheaders)
+  public function forRequest(array $credentials, $method, $url, array $xheaders)
   {
 
     $this->init();
@@ -70,7 +70,7 @@ class Auth
     $this->path = Utils::get($parts, 'path', '/');
     $this->query = Utils::get($parts, 'query', '');
 
-    return $this->commonFor($account, $xheaders);
+    return $this->commonFor($credentials, $xheaders);
 
   }
 
@@ -78,14 +78,14 @@ class Auth
   /**
   * Creates signed response headers for the server
   *
-  * @param array $account Key-value (id, key)
+  * @param array $credentials Key-value (id, key)
   * @param array $xheaders Key-value of x-headers
   * @return mixed Array list of response headers or false
   */
-  public function forResponse(array $account, array $xheaders)
+  public function forResponse(array $credentials, array $xheaders)
   {
     $this->init();
-    return $this->commonFor($account, $xheaders);
+    return $this->commonFor($credentials, $xheaders);
   }
 
 
@@ -95,7 +95,7 @@ class Auth
   * Checks that we have an auth header, which is parsed to retrieve the
   * client's accountId. If optional is true, then requests to public
   * resources are allowed, otherwise the function will fail without
-  * this value. Likewise, if there is not a date x-header
+  * this value.
   *
   * The following properties are set:
   * - method, path, query, authHeader, accountId, signature, xheaders
@@ -135,7 +135,7 @@ class Auth
   * Checks that we have an auth header, which is parsed to retrieve the
   * client's accountId. If optional is true, then the client allows
   * unsigned responses, otherwise the function will fail without
-  * this value. Likewise, if there is not a date x-header
+  * this value.
   *
   * The following properties are set:
   * - authHeader, accountId, signature, xheaders
@@ -165,7 +165,7 @@ class Auth
   /**
   * Checks a signed request is valid
   *
-  * Checks required x-headers, that the date x-header is within the
+  * Checks required x-headers, that the timestamp is within the
   * $interval and that the signature matches
   *
   * @param array $required The required x-headers
@@ -326,10 +326,10 @@ class Auth
   }
 
 
-  private function commonFor(array $account, array $xheaders)
+  private function commonFor(array $credentials, array $xheaders)
   {
 
-    if (!$this->checkAccountDetails($account))
+    if (!$this->checkCredentials($credentials))
     {
       return;
     }
@@ -408,11 +408,11 @@ class Auth
   }
 
 
-  private function checkAccountDetails(array $account)
+  private function checkCredentials(array $credentials)
   {
 
-    $this->accountId = Utils::get($account, 'id');
-    $this->accountKey = Utils::get($account, 'key');
+    $this->accountId = Utils::get($credentials, 'id');
+    $this->accountKey = Utils::get($credentials, 'key');
 
     if (!$res = $this->accountId && $this->accountKey)
     {

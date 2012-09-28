@@ -45,7 +45,7 @@ Setting up a server requires a little more work:
   $server->receive();
 ```
 
-The library also allows you to build your own client-server implementations or extend the existing classes.
+The library also allows you to build your own client-server implementations using the base `AuthKey` class or extend the existing classes.
 
 <a name="Installation"></a>
 ## Installation

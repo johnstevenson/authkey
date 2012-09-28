@@ -320,6 +320,7 @@ class Auth
     $this->errorMsg = '';
     $this->errorResponse = 0;
     $this->xheaders = array();
+    $this->timestamp = 0;
     $this->signature = '';
 
   }
@@ -496,19 +497,32 @@ class Auth
   private function sign()
   {
 
-    $subject = array();
-    $subject[] = $this->method;
-    $this->addXHeaders($subject, true);
-    $subject[] = $this->path;
-    $subject[] = $this->query;
-    $subject[] = $this->timestamp;
-
-    $str = implode("\n", $subject);
-    //$key = hash('sha256', $this->accountKey . $this->getXHeader('data'), true);
-    $key = hash('sha256', $this->accountKey . $this->timestamp, true);
-
+    $str = $this->getStringToSign();
+    $key = $this->getSigningKey($this->accountKey, $this->timestamp);
     return base64_encode(hash_hmac('sha256', $str, $key, true));
 
+  }
+
+
+  private function getStringToSign()
+  {
+
+    $subject = array();
+    $subject[] = $this->method;
+    $subject[] = $this->path;
+    $subject[] = $this->query;
+    $this->addXHeaders($subject, true);
+    $subject[] = $this->config['scheme'];
+    $subject[] = $this->timestamp;
+
+    return implode("\n", $subject);
+
+  }
+
+
+  private function getSigningKey($accountKey, $timestamp)
+  {
+    return hash('sha256', $accountKey . $timestamp, true);
   }
 
 

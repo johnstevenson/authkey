@@ -70,7 +70,7 @@ If you downloaded the library through [composer][composer] then you must add the
 <?php
  require 'vendor/autoload.php';
 ```
-Otherwise you must point a PSR-0 autoloader to the `src` directory so that the classes are automatically included. Full usage [documentation][wiki] can be found in the wiki.
+Otherwise you must point a PSR-0 autoloader to the `src` directory. Full usage [documentation][wiki] can be found in the wiki:
 
 * [Client usage][client]
 * [Server usage][server]
@@ -91,9 +91,9 @@ Auth-Key is licensed under the MIT License - see the `LICENSE` file for details
   [composer]: http://getcomposer.org
   [download]: https://github.com/johnstevenson/authkey/downloads
   [wiki]:https://github.com/johnstevenson/authkey/wiki/Home
-  [client]:https://github.com/johnstevenson/authkey/wiki/Client-usage
-  [server]:https://github.com/johnstevenson/authkey/wiki/Server-usage
-  [authkey]:https://github.com/johnstevenson/authkey/wiki/AuthKey-usage
-  [extending]:https://github.com/johnstevenson/json-rpc/wiki/Extending
+  [client]:https://github.com/johnstevenson/authkey/wiki/Client-Usage
+  [server]:https://github.com/johnstevenson/authkey/wiki/Server-Usage
+  [authkey]:https://github.com/johnstevenson/authkey/wiki/AuthKey-Usage
+  [extending]:https://github.com/johnstevenson/authkey/wiki/Extending
 
 

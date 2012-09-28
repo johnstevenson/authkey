@@ -74,7 +74,7 @@ Otherwise you must point a PSR-0 autoloader to the `src` directory. Full usage [
 
 * [Client usage][client]
 * [Server usage][server]
-* [Build your own][authkey]
+* [AuthKey base][authkey]
 * [Extend the library][extending]
 
 <a name="Example"></a>
@@ -93,7 +93,7 @@ Auth-Key is licensed under the MIT License - see the `LICENSE` file for details
   [wiki]:https://github.com/johnstevenson/authkey/wiki/Home
   [client]:https://github.com/johnstevenson/authkey/wiki/Client-Usage
   [server]:https://github.com/johnstevenson/authkey/wiki/Server-Usage
-  [authkey]:https://github.com/johnstevenson/authkey/wiki/AuthKey-Usage
+  [authkey]:https://github.com/johnstevenson/authkey/wiki/AuthKey-Base
   [extending]:https://github.com/johnstevenson/authkey/wiki/Extending
 
 

@@ -1,5 +1,6 @@
-Auth-Key
-=========
+# Auth-Key
+
+[![Build Status](https://secure.travis-ci.org/johnstevenson/authkey.png)](http://travis-ci.org/johnstevenson/authkey)
 
 A PHP implmentation of the [Auth-Key] authentication scheme.
 

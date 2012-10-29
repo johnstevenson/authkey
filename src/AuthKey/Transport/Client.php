@@ -112,6 +112,8 @@ class Client
       $this->xheaders = $Auth->getAllXHeaders();
     }
 
+    $this->unsigned = empty($Auth->authHeader);
+
     return $res;
 
   }
@@ -334,7 +336,6 @@ class Client
 
       if (!$Auth->authHeader)
       {
-        $this->unsigned = true;
         return true;
       }
 

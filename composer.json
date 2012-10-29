@@ -1,7 +1,7 @@
 {
 
   "name": "authkey/authkey",
-  "description": "An HTTP API authentication scheme ",
+  "description": "An HTTP API authentication implementation",
   "keywords": ["api", "key", "mac", "auth"],
   "homepage": "http://github.com/johnstevenson/authkey",
   "type": "library",

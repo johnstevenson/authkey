@@ -70,7 +70,7 @@ If you downloaded the library through [composer][composer] then you must add the
 <?php
  require 'vendor/autoload.php';
 ```
-Otherwise you must point a PSR-0 autoloader to the `src` directory. Full usage [documentation][wiki] can be found in the wiki:
+Otherwise you must point a PSR-0 autoloader to the `src` directory. Full usage [documentation][wiki] can be found in the Wiki:
 
 * [Client usage][client]
 * [Server usage][server]

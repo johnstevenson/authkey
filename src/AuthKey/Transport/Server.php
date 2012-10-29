@@ -298,7 +298,7 @@ class Server
 
     $authHdrs = array();
 
-    if (!empty($this->options['strict']))
+    if (!empty($this->options['strict']) || $this->options['xheaders'])
     {
 
       $account = array(

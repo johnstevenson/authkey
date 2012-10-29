@@ -42,14 +42,18 @@
   echo '</form>';
   echo '<pre>';
 
-  echo '<b>Return value:</b> ';
+  echo '<b>return:</b> ';
   echo $result ? 'true' : 'false';
   echo '<br /><br />';
 
-  echo '<b>Output:</b> ' . $Client->output;
-  echo '<br /><br />';
+  echo '<b>error:</b> ' . $Client->error;
   echo '<br /><br />';
 
+  echo '<b>output:</b> ' . $Client->output;
+  echo '<br /><br />';
+
+  echo '<hr />';
+  echo '<br /><br />';
   echo '<b>Client object:</b> ';
   echo '<br /><br />';
   print_r($Client);

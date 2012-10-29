@@ -22,7 +22,7 @@
 
   $options = array(
     'public' => false,
-    'strict' => true,
+    //'strict' => true,
   );
 
   $Server = new AuthKey\Transport\Server($handlers, $options);
@@ -85,8 +85,8 @@ function authorize(AuthKey\Transport\Server $Server)
 function process(AuthKey\Transport\Server $Server)
 {
 
+  $Server->setXHeaderOut('content-type', 'text/html');
   $Server->reply('Reply from server [' . date(DATE_RFC822) . ']');
 
 }
 
-?>

@@ -112,7 +112,7 @@ class Auth
 
     $authKey = $this->makeHttpPrefix($this->config['name']);
 
-    if (!$this->commonFrom($server, $authKey, $optional))
+    if (!$this->commonFrom($server, $authKey, true))
     {
       return $optional;
     }
@@ -150,7 +150,7 @@ class Auth
 
     $this->init();
 
-    if (!$this->commonFrom($headers, $this->config['name'], $optional))
+    if (!$this->commonFrom($headers, $this->config['name'], false))
     {
       return $optional;
     }
@@ -346,7 +346,7 @@ class Auth
   }
 
 
-  private function commonFrom(array $headers, $authKey, $optional)
+  private function commonFrom(array $headers, $authKey, $fromRequest)
   {
 
     $headerName = $this->config['name'] . ' header';
@@ -354,7 +354,7 @@ class Auth
     if (!isset($headers[$authKey]))
     {
 
-      if (!$optional)
+      if (!$fromRequest)
       {
         $msg = $headerName . ' is missing';
         $this->setError(self::ERR_MISSING, $msg);

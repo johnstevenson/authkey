@@ -1,4 +1,4 @@
-# Auth-Key
+# AuthKey
 
 [![Build Status](https://secure.travis-ci.org/johnstevenson/authkey.png)](http://travis-ci.org/johnstevenson/authkey)
 
@@ -15,7 +15,14 @@ A PHP implementation of the [Auth-Key][Auth-Key] authentication scheme.
 <a name="About"></a>
 ## About
 
-Auth-Key is an API authentication scheme that enables a client to send its credentials to a service provider in a secure manner. The receiving server can then check these and either allow or deny access to its API. For more information, see the [specification][Auth-Key].
+AuthKey is an API authentication framework that enables a client to send its credentials in a request to a service provider using a special HTTP header. For example:
+
+```
+Auth-Key: MAC 1348748096:client-id:IjVWyeKKg5wJf+O5SwqAL5Zg9nJdEW5lmcZSZvGvcLU=
+```
+
+The receiving server can then check these and either allow or deny access to its API. For more information, see the [specification][Auth-Key].
+
 
 This library provides **client** and **server** implementations that are easy to set up and use, freeing you from the technicalities of HTTP headers and HMAC hashes. For example, setting up a client looks like this:
 

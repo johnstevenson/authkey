@@ -181,7 +181,6 @@ class Server
 
 
   /**
-  * (
   * Sets the HTTP status header for the response. Only required
   * when a status code other than 200, 400, 403 or 500 must be returned.
   * The value is passed to the PHP header() function.
@@ -190,7 +189,6 @@ class Server
   *
   * Or if sending a redirect:
   *   Location: http://www.example.com/
-  * )
   *
   *
   * @param string $content
@@ -232,7 +230,7 @@ class Server
   * Sets a required x-header value
   *
   * Accepts a string containing either a single or a comma-separated list
-  * of values, or an array. Values can be either prefixed and unprefixed.
+  * of values, or an array. Values can be either prefixed or unprefixed.
   *
   * @param mixed $value String or Array
   */

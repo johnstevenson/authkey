@@ -70,7 +70,7 @@ function authorize(AuthKey\Transport\Server $Server)
 
   $res = false;
 
-  if ($Server->accountId === 'client-demo')
+  if ($Server->accountId === 'clients-demo')
   {
     $Server->accountKey = 'U7ZPJyFAX8Gr3Hm2DFrSQy3x1I3nLdNT2U1c+ToE5Vk=';
     //$Server->setRequired('content-type');
@@ -86,7 +86,7 @@ function process(AuthKey\Transport\Server $Server)
 {
 
   $Server->setXHeaderOut('content-type', 'text/html');
-  $Server->reply('Reply from server [' . date(DATE_RFC822) . ']');
+  $Server->reply('Reply from server [' . date(DATE_RFC850) . ']');
 
 }
 

@@ -8,8 +8,6 @@ use AuthKey\Utils;
 class Client
 {
 
-  public $errorCode = '';
-  public $errorMsg = '';
   public $error = '';
 
   public $statusCode = 0;
@@ -151,11 +149,7 @@ class Client
 
   protected function setError($code, $msg)
   {
-
-    $this->errorCode = $code;
-    $this->errorMsg = $msg;
-    $this->error = $this->errorCode . ': ' . $this->errorMsg;
-
+    $this->error = $code . ': ' . $msg;
   }
 
 

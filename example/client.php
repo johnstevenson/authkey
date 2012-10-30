@@ -11,7 +11,7 @@
   $url = getServerUrl();
 
   # get passed in proxy - only for demo (fiddler - 127.0.0.1:8888)
-  $proxy = !empty($_GET['proxy']) ? $_GET['proxy'] : '';
+  $proxy = !empty($_POST['proxy']) ? $_POST['proxy'] : '';
 
 
   # set up our account details
@@ -32,7 +32,7 @@
   # ...and send it
   $result = $Client->send('POST', $url, $data);
 
-  echo '<form method="GET">';
+  echo '<form method="POST">';
   echo '<p>';
   echo '<input type="submit" value="Run Example"> &nbsp;&nbsp;Last run: ' . date(DATE_RFC822);
   echo '</p><p>';
@@ -54,16 +54,22 @@
 
   echo '<hr />';
   echo '<br /><br />';
-  echo '<b>Client object:</b> ';
+  echo '<b>Client object public properties:</b> ';
   echo '<br /><br />';
-  print_r($Client);
+  echo getPublicProperties($Client);
 
 
 function getServerUrl()
 {
-
   $path = dirname($_SERVER['PHP_SELF']) . '/server.php';
   $scheme = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') ? 'https' : 'http';
   return $scheme . '://' . $_SERVER['HTTP_HOST'] . $path;
+}
 
+
+function getPublicProperties($class)
+{
+  $public = get_object_vars($class);
+  ksort($public);
+  return str_ireplace('stdClass', get_class($class), print_r((object) $public, 1));
 }

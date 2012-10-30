@@ -47,13 +47,13 @@ class Server
   * @param array $handlers
   * @param array $options
   */
-  public function __construct($handlers, $options = array())
+  public function __construct(array $handlers, array $options = array())
   {
 
     ini_set('display_errors', '0');
     header('HTTP/1.1 500 Internal Server Error', true, 500);
 
-    $this->handlers = (array) $handlers;
+    $this->handlers = $handlers;
 
     $this->initOptions();
 

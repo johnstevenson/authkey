@@ -15,7 +15,7 @@ A PHP implementation of the [Auth-Key][Auth-Key] authentication scheme.
 <a name="About"></a>
 ## About
 
-AuthKey is an API authentication framework that sends client credentials with the request to a service provider using a special header:
+AuthKey is an API authentication framework that sends client credentials with each request, using a special HTTP header:
 
 `Auth-Key: MAC 1348748096:client-id:IjVWyeKKg5wJf+O5SwqAL5Zg9nJdEW5lmcZSZvGvcLU=`.
 
@@ -41,7 +41,7 @@ Setting up a server requires a little more work:
 ```php
 <?php
   $handlers = array(
-    'authorize' => new AuthorizeClass(), # we need a class to authorize the client
+    'authorize' => new AuthorizeClass(), # we need a class to authorize clients
     'process' => new ProcessClass(),     # and a class to process successful requests
   );
 
@@ -78,7 +78,7 @@ Otherwise you must point a PSR-0 autoloader to the `src` directory. Full usage [
 
 * [Client usage][client]
 * [Server usage][server]
-* [AuthKey base][authkey]
+* [Auth base class][authbase]
 * [Extend the library][extending]
 
 <a name="Example"></a>
@@ -97,7 +97,7 @@ Auth-Key is licensed under the MIT License - see the `LICENSE` file for details
   [wiki]:https://github.com/johnstevenson/authkey/wiki/Home
   [client]:https://github.com/johnstevenson/authkey/wiki/Client-Usage
   [server]:https://github.com/johnstevenson/authkey/wiki/Server-Usage
-  [authkey]:https://github.com/johnstevenson/authkey/wiki/AuthKey-Base
+  [authbase]:https://github.com/johnstevenson/authkey/wiki/Auth-Base-Class
   [extending]:https://github.com/johnstevenson/authkey/wiki/Extending
 
 

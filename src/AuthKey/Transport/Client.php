@@ -31,7 +31,7 @@ class Client
   * Options are:
   *
   *   'strict'                - bool responses must be signed [false]
-  *                             can also be set with setOption('strict', value)
+  *                             can also be set with setStrict(value)
   *
   *   'auth' (array)          - array of AuthKey config settings comprising:
   *
@@ -129,9 +129,9 @@ class Client
   }
 
 
-  public function setOption($name, $value)
+  public function setStrict($value)
   {
-    Utils::setOption($this->options, '', $name, $value);
+    Utils::setOption($this->options, '', 'strict', $value);
   }
 
 

@@ -68,12 +68,12 @@ class Client
   }
 
 
-  public function send($method, $url, $content = '')
+  public function send($method, $url, $data = '')
   {
 
     $this->init();
 
-    if (!$this->checkContent($content, $errorMsg))
+    if (!$this->checkRequestData($data, $errorMsg))
     {
       $this->setError(static::ERR_INTERNAL, $errorMsg);
       return false;
@@ -94,7 +94,7 @@ class Client
       return false;
     }
 
-    if (!$this->responseGet($method, $url, $headers, $content))
+    if (!$this->responseGet($method, $url, $headers, $data))
     {
       return false;
     }
@@ -153,7 +153,7 @@ class Client
   }
 
 
-  private function responseGet($method, $url, $headers, &$content)
+  private function responseGet($method, $url, $headers, $data)
   {
 
     $ch = curl_init($url);
@@ -175,7 +175,7 @@ class Client
     {
 
       curl_setopt($ch, CURLOPT_POST, 1);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
       if (empty($this->options['headers']['Expect']))
       {
@@ -209,21 +209,21 @@ class Client
   }
 
 
-  private function checkContent(&$content, &$errorMsg)
+  private function checkRequestData(&$data, &$errorMsg)
   {
 
     $errorMsg = '';
 
-    if (is_array($content))
+    if (is_array($data))
     {
 
-      if (count($content) === count($content, COUNT_RECURSIVE))
+      if (count($data) === count($data, COUNT_RECURSIVE))
       {
 
         $res = false;
 
         // not nested, check for a string key - only one is needed
-        foreach ($content as $key => $value)
+        foreach ($data as $key => $value)
         {
 
           if (is_string($key))
@@ -246,14 +246,14 @@ class Client
       }
 
     }
-    elseif (!is_string($content))
+    elseif (!is_string($data))
     {
-      $errorMsg = gettype($content);
+      $errorMsg = gettype($data);
     }
 
     if ($errorMsg)
     {
-      $errorMsg = 'Invalid content: ' . $errorMsg;
+      $errorMsg = 'Invalid request data: ' . $errorMsg;
     }
 
     return empty($errorMsg);

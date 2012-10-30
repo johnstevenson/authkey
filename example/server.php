@@ -70,7 +70,7 @@ function authorize(AuthKey\Transport\Server $Server)
 
   $res = false;
 
-  if ($Server->accountId === 'clients-demo')
+  if ($Server->accountId === 'client-demo')
   {
     $Server->accountKey = 'U7ZPJyFAX8Gr3Hm2DFrSQy3x1I3nLdNT2U1c+ToE5Vk=';
     //$Server->setRequired('content-type');

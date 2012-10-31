@@ -25,6 +25,7 @@ This library provides **client** and **server** implementations that are easy to
 
 ```php
 <?php
+  # your credentials are supplied by the service provider
   $credentials = array(
     'id' => 'MyAccountId',
     'key' => 'MyAccountKey',
@@ -40,9 +41,11 @@ Setting up a server requires a little more work:
 
 ```php
 <?php
+  $helpers = new HelpersClass();
+
   $handlers = array(
-    'authorize' => new AuthorizeClass(), # we need a class to authorize clients
-    'process' => new ProcessClass(),     # and a class to process successful requests
+    'authorize' => $helpers->authorize, # we need a function to authorize clients
+    'process' => $helpers->process,     # and a function to process successful requests
   );
 
   $server = new AuthKey\Transport\Server($handlers);

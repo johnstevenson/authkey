@@ -181,8 +181,8 @@ class Server
 
 
   /**
-  * Sets the HTTP status header for the response. Only required
-  * when a status code other than 200, 400, 403 or 500 must be returned.
+  * The option headers array can be used to set the HTTP status header for the response.
+  * This is only required when a status code other than 200, 400, 403 or 500 must be returned.
   * The value is passed to the PHP header() function.
   * For example:
   *   HTTP/1.1 409 Conflict

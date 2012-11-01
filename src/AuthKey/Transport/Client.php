@@ -73,9 +73,11 @@ class Client
 
     $this->init();
 
-    if (!$this->checkRequestData($data, $errorMsg))
+    $method = strtoupper($method);
+
+    if (!$this->checkRequestData($data, $error))
     {
-      $this->setError(static::ERR_INTERNAL, $errorMsg);
+      $this->setError(static::ERR_INTERNAL, $error);
       return false;
     }
 
@@ -157,12 +159,13 @@ class Client
   {
 
     $ch = curl_init($url);
+    $fh = null;
 
-    // set redirects here so user options can change them
+    # set redirects here so user options can change them
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
 
-    // pull in user options
+    # pull in user options
     foreach ($this->options['curl'] as $option => $value)
     {
       curl_setopt($ch, $option, $value);
@@ -173,16 +176,28 @@ class Client
 
     if ($method === 'POST')
     {
-
       curl_setopt($ch, CURLOPT_POST, 1);
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    }
+    elseif ($method === 'PUT')
+    {
 
-      if (empty($this->options['headers']['Expect']))
+      if (!$this->setPut($ch, $fh, $error, $data))
       {
-        $headers[] = 'Expect:';
+        $this->setError(static::ERR_INTERNAL, $error);
+        $this->closeHandles($ch, $fh);
+        return;
       }
 
+      curl_setopt($ch, CURLOPT_PUT, 1);
+
     }
+    elseif ($method !== 'GET')
+    {
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    }
+
+    $this->setExpectHeader($method, $data, $headers);
 
     $ar = array();
 
@@ -198,10 +213,12 @@ class Client
     {
       $error = '(curl errno '. curl_errno($ch) . ') ' . curl_error($ch);
       $this->setError(static::ERR_INTERNAL, "Failed to open {$url}: {$error}");
+      $this->closeHandles($ch, $fh);
       return;
     }
 
     $info = curl_getinfo($ch);
+    $this->closeHandles($ch, $fh);
     $this->responseProcess($info, $response);
 
     return true;
@@ -209,10 +226,10 @@ class Client
   }
 
 
-  private function checkRequestData(&$data, &$errorMsg)
+  private function checkRequestData(&$data, &$error)
   {
 
-    $errorMsg = '';
+    $error = '';
 
     if (is_array($data))
     {
@@ -236,27 +253,27 @@ class Client
 
         if (!$res)
         {
-          $errorMsg = 'numerically indexed array';
+          $error = 'numerically indexed array';
         }
 
       }
       else
       {
-        $errorMsg = 'nested array';
+        $error = 'nested array';
       }
 
     }
     elseif (!is_string($data))
     {
-      $errorMsg = gettype($data);
+      $error = gettype($data);
     }
 
-    if ($errorMsg)
+    if ($error)
     {
-      $errorMsg = 'Invalid request data: ' . $errorMsg;
+      $error = 'Invalid request data: ' . $error;
     }
 
-    return empty($errorMsg);
+    return empty($error);
 
   }
 
@@ -288,6 +305,128 @@ class Client
     if (strlen($response) > $info['header_size'])
     {
       $this->output = substr($response, $info['header_size']);
+    }
+
+  }
+
+
+  private function setPut(&$ch, &$fh, &$error, $data)
+  {
+
+    $error = '';
+    $fileMsg = 'Cannot open file for PUT request';
+
+    if (!$data)
+    {
+      # we presume the user has set everything up
+      return true;
+    }
+
+    $fileSize = 0;
+
+    if (is_string($data))
+    {
+
+      if (!$fh = fopen('php://temp/maxmemory:256000', 'wb'))
+      {
+        $error = $fileMsg . ': php://temp';
+        return;
+      }
+
+      fwrite($fh, $data);
+      rewind($fh);
+
+      $fileSize = strlen($data);
+
+    }
+    elseif (is_array($data))
+    {
+
+      $value = array_shift($data);
+
+      if ($value[0] === '@')
+      {
+        $filename = substr($value, 1);
+      }
+      else
+      {
+        $error = $fileMsg;
+        return;
+      }
+
+      $ar = explode(';', $filename);
+      $filename = $ar[0];
+
+      if (count($ar) === 2)
+      {
+
+        if ($content = str_replace('=', '', strstr($ar[1], '=')))
+        {
+          $this->setHeader('Content-Type', $content);
+        }
+
+      }
+
+      if (!file_exists($filename))
+      {
+        $error = $fileMsg . ': ' .  substr($filename, -200);
+        return;
+      }
+
+      $fileSize = filesize($filename);
+
+      # if its bigger then 2gb and we are 32 bit, we cannot do this
+      if ($fileSize < 0)
+      {
+        $error = 'Negative file size for PUT request: ' . $filename;
+        return;
+      }
+
+      if (!$fh = fopen($filename, 'rb'))
+      {
+        $error = $fileMsg . ': ' . $filename;
+        return;
+      }
+
+    }
+
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_INFILE, $fh);
+    curl_setopt($ch, CURLOPT_INFILESIZE, $fileSize);
+
+    return true;
+
+  }
+
+
+  private function setExpectHeader($method, $data, &$headers)
+  {
+
+    # if PUT has been set through curl_setopt, $data will be empty
+    if ($data || $method === 'PUT')
+    {
+
+      if (empty($this->options['headers']['Expect']))
+      {
+        $headers[] = 'Expect:';
+      }
+
+    }
+
+  }
+
+
+  private function closeHandles(&$ch, &$fh)
+  {
+
+    if ($ch)
+    {
+      curl_close($ch);
+    }
+
+    if ($fh)
+    {
+      fclose($fh);
     }
 
   }

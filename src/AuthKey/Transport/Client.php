@@ -18,7 +18,7 @@ class Client
   public $unsigned = false;
 
   protected $account = array();
-  private $options = array();
+  protected $options = array();
 
   const ERR_INTERNAL = 'InternalError';
   const ERR_REQUEST = 'RequestError';

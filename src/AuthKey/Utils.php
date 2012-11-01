@@ -105,24 +105,13 @@ class Utils
   /**
   * Sets the name and value of an x-header in $storage.
   *
-  * Handles existing values which are combined into a
-  * comma-separated list.
-  *
   * @param array $storage The storage container
   * @param mixed $name The unprefixed name of the x-header
   * @param mixed $value The value of the x-header, or null to unset it
   */
   public static function setXHeader(array &$storage, $name, $value)
   {
-
-    if ($value && is_scalar($value))
-    {
-      $current = static::get($storage['xheaders'], $name, '');
-      $value = static::addCsv($current, $value);
-    }
-
-    static::setOption($storage, 'xheaders', $name, $value);
-
+    static::setOption($storage, 'xheaders', strtolower($name), $value);
   }
 
 

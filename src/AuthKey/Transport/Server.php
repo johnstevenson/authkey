@@ -89,9 +89,8 @@ class Server
 
   /**
   * Sets an xheader to be sent with the response.
-  * Accepts $name as either x-nnn-keyname or keyname
   *
-  * @param string $name Can be the prefixed or unprefixed name
+  * @param string $name Must be the unprefixed name
   * @param string $value
   */
   public function setXHeaderOut($name, $value)

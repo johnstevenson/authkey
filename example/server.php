@@ -22,7 +22,7 @@
 
   $options = array(
     'public' => false,
-    //'strict' => true,
+    'strict' => false,
   );
 
   $Server = new AuthKey\Transport\Server($handlers, $options);
@@ -41,13 +41,18 @@ function authorize(AuthKey\Transport\Server $Server)
 {
 
   /*
-    The client's accountId is in $Server->accountId. Note that this may
-    be an empty string ('') if you allow requests to public resources
-    (by setting the 'public' option to true), in which case Auth-Key headers
-    will have been sent.
+    The client's accountId is in $Server->accountId.
 
-    On success set $Server->accountKey to the client's accountKey (or
-    leave empty in the case of public resources) and return true.
+    If you allow requests to public resources (by setting the 'public'
+    option to true), then this will be an empty string ('') if no
+    Auth-Key headers have been sent.
+
+    Note that if the 'public' option is false (the default setting) and
+    no Auth-Key headers have been sent, an error will have already been
+    returned to the client, so you won't get here.
+
+    On success set $Server->accountKey to the client's accountKey
+    and return true.
 
     On error return either an array containing the error message:
 
@@ -70,6 +75,13 @@ function authorize(AuthKey\Transport\Server $Server)
 
   $res = false;
 
+  if (!$Server->accountId)
+  {
+    # return true if the resource is public
+    return $res;
+  }
+
+
   if ($Server->accountId === 'client-demo')
   {
     $Server->accountKey = 'U7ZPJyFAX8Gr3Hm2DFrSQy3x1I3nLdNT2U1c+ToE5Vk=';
@@ -85,7 +97,7 @@ function authorize(AuthKey\Transport\Server $Server)
 function process(AuthKey\Transport\Server $Server)
 {
 
-  $Server->setXHeaderOut('content-type', 'text/html');
+  //$Server->setXHeaderOut('content-type', 'text/html');
   $Server->reply('Reply from server [' . date(DATE_RFC850) . ']');
 
 }

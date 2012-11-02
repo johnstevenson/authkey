@@ -127,7 +127,7 @@ class Server
     else
     {
       # ... otherwise execution returns for the caller to handle
-      return @file_get_contents('php://input');
+      return;
     }
 
   }

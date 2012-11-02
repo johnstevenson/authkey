@@ -35,7 +35,7 @@ class Server
   *
   * Options are:
   *
-  *   'public'                - bool allow unsigned requests for public resources [true]
+  *   'public'                - bool allow unsigned requests for public resources [false]
   *   'strict'                - bool responses must be signed [false]
   *
   *   'auth' (array)          - array of AuthKey config settings comprising:
@@ -180,7 +180,7 @@ class Server
 
 
   /**
-  * The option headers array can be used to set the HTTP status header for the response.
+  * The optional headers array can be used to set the HTTP status header for the response.
   * This is only required when a status code other than 200, 400, 403 or 500 must be returned.
   * The value is passed to the PHP header() function.
   * For example:
@@ -195,7 +195,35 @@ class Server
   */
   public function reply($content, $headers = array())
   {
-    $this->replyWork($content, $headers);
+
+    $responseCode = 200;
+    $headers = (array) $headers;
+    $headers = $this->getUniqueHeaders($headers, $responseCode);
+
+    $authHdrs = array();
+    $strict = Utils::get($this->options, 'strict');
+
+    if ($this->Auth->accountId && ($this->options['xheaders'] || $strict))
+    {
+
+      $account = array(
+        'id' => $this->Auth->accountId,
+        'key' => $this->Auth->accountKey,
+      );
+
+      $authHdrs = $this->Auth->forResponse($account, $this->options['xheaders']);
+
+      if (!$authHdrs)
+      {
+        $this->replyError($this->Auth);
+      }
+
+    }
+
+    $headers = array_merge($headers, $authHdrs);
+
+    $this->output($responseCode, $content, $headers);
+
   }
 
 
@@ -283,38 +311,6 @@ class Server
     }
 
     $this->replyErrorWork($res);
-
-  }
-
-
-  private function replyWork($content, $headers)
-  {
-
-    $responseCode = 200;
-    $headers = $this->getUniqueHeaders($headers, $responseCode);
-
-    $authHdrs = array();
-
-    if (!empty($this->options['strict']) || $this->options['xheaders'])
-    {
-
-      $account = array(
-        'id' => $this->Auth->accountId,
-        'key' => $this->Auth->accountKey,
-      );
-
-      $authHdrs = $this->Auth->forResponse($account, $this->options['xheaders']);
-
-      if (!$authHdrs)
-      {
-        $this->replyError($this->Auth);
-      }
-
-    }
-
-    $headers = array_merge($headers, $authHdrs);
-
-    $this->output($responseCode, $content, $headers);
 
   }
 
@@ -413,10 +409,9 @@ class Server
   }
 
 
-  private function getUniqueHeaders($headers, &$responseCode)
+  private function getUniqueHeaders(array $headers, &$responseCode)
   {
 
-    $headers = (array) $headers;
     $unique = array();
     $statusHeader = '';
 
@@ -462,7 +457,7 @@ class Server
 
     $this->options = array(
 
-      'public' => true,
+      'public' => false,
       'strict' => false,
       'auth' => array(),
       'xheaders' => array(),

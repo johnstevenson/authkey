@@ -33,17 +33,17 @@ class Client
   *   'strict'                - bool responses must be signed [false]
   *                             can also be set with setStrictMode(value)
   *
-  *   'auth' (array)          - array of AuthKey config settings comprising:
+  *   'auth'                  - array key-value of AuthKey config settings:
   *
-  *       name:               - string the name of the header ['Auth-Key']
-  *       scheme:             - string the name of the scheme ['MAC']
-  *       xname:              - string the x-headers prefix name ['mac']
-  *       interval:           - integer time value in seconds [600]
+  *       name                - string the name of the header ['Auth-Key']
+  *       scheme              - string the name of the scheme ['MAC']
+  *       xname               - string the x-headers prefix name ['mac']
+  *       interval            - integer time value in seconds [600]
   *
-  *   'curl'                  - array key-value curl options
+  *   'curl'                  - array key-value of curl options
   *                             can also be set with setCurlOption(option, value)
   *
-  *   'headers'               - array key-value headers to send
+  *   'headers'               - array key-value of headers to send
   *                             can also be set with setHeader(name, value)
   *
   *   'xheaders'              - array key-value xheaders to send

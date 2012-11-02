@@ -30,7 +30,7 @@ class Auth
 
   const ERR_INTERNAL = 'InternalError';
   const ERR_MISSING = 'MissingSecurityHeader';
-  const ERR_INVALID = 'InvalidArgument';
+  const ERR_INVALID = 'InvalidHeader';
   const ERR_TIME = 'RequestTimeTooSkewed';
   const ERR_SIGNATURE = 'SignatureDoesNotMatch';
 

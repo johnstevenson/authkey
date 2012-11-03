@@ -82,6 +82,17 @@ class Server
 
 
   /**
+  * Sets whether responses should be signed
+  *
+  * @param bool $value
+  */
+  public function setStrictMode($value)
+  {
+    Utils::setOption($this->options, '', 'strict', $value);
+  }
+
+
+  /**
   * Sets an xheader to be sent with the response.
   *
   * @param string $name Must be the unprefixed name
@@ -277,18 +288,6 @@ class Server
       throw new \Exception('Unexpected required type: ' . gettype($value));
     }
 
-  }
-
-
-  /**
-  * Helper function for inherited classes to set an option
-  *
-  * @param mixed $name
-  * @param mixed $value
-  */
-  protected function setOption($name, $value)
-  {
-    Utils::setOption($this->options, '', $name, $value);
   }
 
 

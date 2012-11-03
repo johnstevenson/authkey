@@ -11,9 +11,9 @@ class Server
   public $accountId = '';
   public $accountKey = '';
 
+  protected $options = array();
   /** @var Auth */
   private $Auth;
-  private $options = array();
   private $handlers = array();
   private $required = array();
   private $stage = 0;

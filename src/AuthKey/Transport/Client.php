@@ -62,7 +62,7 @@ class Client
 
     if ($options)
     {
-      $this->config($options);
+      Utils::config($this->options, $options);
     }
 
   }
@@ -140,12 +140,6 @@ class Client
   public function setXHeader($name, $value)
   {
     Utils::setXHeader($this->options, $name, $value);
-  }
-
-
-  public function config($options)
-  {
-    Utils::config($this->options, $options);
   }
 
 

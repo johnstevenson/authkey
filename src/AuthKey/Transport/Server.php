@@ -59,17 +59,11 @@ class Server
 
     if ($options)
     {
-      $this->config($options);
+      Utils::config($this->options, $options);
     }
 
     $this->Auth = new Auth($this->options['auth']);
 
-  }
-
-
-  public function config($options)
-  {
-    Utils::config($this->options, $options);
   }
 
 

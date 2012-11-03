@@ -11,10 +11,10 @@ class Server
   public $accountId = '';
   public $accountKey = '';
 
-  protected $options = array();
   /** @var Auth */
   private $Auth;
   private $handlers = array();
+  private $options = array();
   private $required = array();
   private $stage = 0;
 
@@ -277,6 +277,18 @@ class Server
       throw new \Exception('Unexpected required type: ' . gettype($value));
     }
 
+  }
+
+
+  /**
+  * Helper function for inherited classes to set an option
+  *
+  * @param mixed $name
+  * @param mixed $value
+  */
+  protected function setOption($name, $value)
+  {
+    Utils::setOption($this->options, '', $name, $value);
   }
 
 

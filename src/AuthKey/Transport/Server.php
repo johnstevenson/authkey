@@ -36,7 +36,7 @@ class Server
   * Options are:
   *
   *   'public'                - bool allow unsigned requests for public resources [false]
-  *   'strict'                - bool responses must be signed [false]
+  *   'unsigned'              - bool responses are not signed [false]
   *
   *   'auth' (array)          - array of AuthKey config settings comprising:
   *       name:                 - string the name of the header ['Auth-Key']
@@ -82,13 +82,13 @@ class Server
 
 
   /**
-  * Sets whether responses should be signed
+  * Sets whether responses should be unsigned
   *
   * @param bool $value
   */
-  public function setStrictMode($value)
+  public function setUnsigned($value)
   {
-    Utils::setOption($this->options, '', 'strict', $value);
+    Utils::setOption($this->options, '', 'unsigned', $value);
   }
 
 
@@ -206,9 +206,9 @@ class Server
     $headers = $this->getUniqueHeaders($headers, $responseCode);
 
     $authHdrs = array();
-    $strict = Utils::get($this->options, 'strict');
+    $unsigned = Utils::get($this->options, 'unsigned');
 
-    if ($this->Auth->accountId && ($this->options['xheaders'] || $strict))
+    if ($this->Auth->accountId && ($this->options['xheaders'] || !$unsigned))
     {
 
       $account = array(
@@ -463,7 +463,7 @@ class Server
     $this->options = array(
 
       'public' => false,
-      'strict' => false,
+      'unsigned' => false,
       'auth' => array(),
       'xheaders' => array(),
 

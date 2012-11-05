@@ -15,7 +15,7 @@ class Client
   public $headers = array();
   public $xheaders = array();
   public $output = '';
-  public $unsigned = false;
+  public $unverified = false;
 
   protected $account = array();
   protected $options = array();
@@ -30,8 +30,8 @@ class Client
   *
   * Options are:
   *
-  *   'strict'                - bool responses must be signed [false]
-  *                             can also be set with setStrictMode(value)
+  *   'unsigned'              - bool responses can be unsigned [false]
+  *                             can also be set with setUnsigned(value)
   *
   *   'auth'                  - array key-value of AuthKey config settings:
   *
@@ -112,7 +112,7 @@ class Client
       $this->xheaders = $Auth->getAllXHeaders();
     }
 
-    $this->unsigned = empty($Auth->authHeader);
+    $this->unverified = empty($Auth->authHeader);
 
     return $res;
 
@@ -131,9 +131,9 @@ class Client
   }
 
 
-  public function setStrictMode($value)
+  public function setUnsigned($value)
   {
-    Utils::setOption($this->options, '', 'strict', $value);
+    Utils::setOption($this->options, '', 'unsigned', $value);
   }
 
 
@@ -434,7 +434,7 @@ class Client
     $this->headers = array();
     $this->xheaders = array();
     $this->output = '';
-    $this->unsigned = false;
+    $this->unverified = false;
 
   }
 
@@ -444,7 +444,7 @@ class Client
 
     $this->options = array(
 
-      'strict' => false,
+      'unsigned' => false,
       'auth' => array(),
       'curl' => array(),
       'headers' => array(),
@@ -458,7 +458,7 @@ class Client
   private function checkResponse(Auth $Auth)
   {
 
-    if ($Auth->fromResponse($this->headers, !$this->options['strict']))
+    if ($Auth->fromResponse($this->headers, $this->options['unsigned']))
     {
 
       if (!$Auth->authHeader)

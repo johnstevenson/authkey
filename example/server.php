@@ -22,7 +22,7 @@
 
   $options = array(
     'public' => false,
-    'strict' => false,
+    'unsigned' => false,
   );
 
   $Server = new AuthKey\Transport\Server($handlers, $options);

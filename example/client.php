@@ -24,7 +24,7 @@
   $Client = new AuthKey\Transport\Client($account);
 
   $Client->setCurlOption(CURLOPT_PROXY, $proxy);
-  //$Client->setStrictMode(true);
+  $Client->setUnsigned(true);
 
   # write some data to send...
   $data = array('msg' => 'Hello World');

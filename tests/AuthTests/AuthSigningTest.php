@@ -26,7 +26,6 @@ class AuthSigningTest extends \AuthTests\Base
     $this->xheaders['username'] = 'fred';
     $this->xheaders['content-type'] = 'application/json';
 
-
   }
 
 
@@ -60,12 +59,13 @@ class AuthSigningTest extends \AuthTests\Base
   {
 
     $auth = new Auth();
-    $this->forRequest($auth);
+    $this->forRequest($auth, 'GET');
 
     $timestamp = $this->getAuthPrivate($auth, 'timestamp');
+    $requestId = $auth->requestId;
     $method = $this->getAuthPrivate($auth, 'getStringToSign', false);
 
-    $str = "GET<LF>/api<LF><LF>x-mac-content-type:application/json<LF>x-mac-username:fred<LF>MAC<LF>{$timestamp}";
+    $str = "GET<LF>/api<LF><LF>x-mac-content-type:application/json<LF>x-mac-username:fred<LF>MAC<LF>{$timestamp}<LF>{$requestId}";
 
     $this->assertEquals($this->formatStr($str), $method->invoke($auth));
 
@@ -90,9 +90,10 @@ class AuthSigningTest extends \AuthTests\Base
     $auth->forResponse($account, $xheaders);
 
     $timestamp = $this->getAuthPrivate($auth, 'timestamp');
+    $requestId = $auth->requestId;
     $method = $this->getAuthPrivate($auth, 'getStringToSign', false);
 
-    $str = "<LF><LF><LF>x-mac-content-type:application/json<LF>SecretKey<LF>{$timestamp}";
+    $str = "<LF><LF><LF>x-mac-content-type:application/json<LF>SecretKey<LF>{$timestamp}<LF>{$requestId}";
 
     $this->assertEquals($this->formatStr($str), $method->invoke($auth));
 
@@ -107,13 +108,14 @@ class AuthSigningTest extends \AuthTests\Base
   {
 
     $auth = new Auth();
-    $this->forRequest($auth);
+    $this->forRequest($auth, 'GET');
 
     $timestamp = $this->getAuthPrivate($auth, 'timestamp');
+    $requestId = $auth->requestId;
     $signature = $this->getAuthPrivate($auth, 'signature');
 
     $key = $this->getSigningKey($timestamp);
-    $str = "GET<LF>/api<LF><LF>x-mac-content-type:application/json<LF>x-mac-username:fred<LF>MAC<LF>{$timestamp}";
+    $str = "GET<LF>/api<LF><LF>x-mac-content-type:application/json<LF>x-mac-username:fred<LF>MAC<LF>{$timestamp}<LF>{$requestId}";
 
     $expects = $this->getSignature($this->formatStr($str), $key);
 
@@ -130,16 +132,17 @@ class AuthSigningTest extends \AuthTests\Base
   {
 
     $auth = new Auth();
-    $this->forRequest($auth);
+    $this->forRequest($auth, 'GET');
 
     $timestamp = $this->getAuthPrivate($auth, 'timestamp');
+    $requestId = $auth->requestId;
 
     $key = $this->getSigningKey($timestamp);
-    $str = "GET<LF>/api<LF><LF>x-mac-content-type:application/json<LF>x-mac-username:fred<LF>MAC<LF>{$timestamp}";
+    $str = "GET<LF>/api<LF><LF>x-mac-content-type:application/json<LF>x-mac-username:fred<LF>MAC<LF>{$timestamp}<LF>{$requestId}";
 
     $signature = $this->getSignature($this->formatStr($str), $key);
 
-    $expects = Auth::DEF_NAME . ': ' . Auth::DEF_SCHEME . ' ' . "{$timestamp}:{$this->accountId}:{$signature}";
+    $expects = Auth::DEF_NAME . ': ' . Auth::DEF_SCHEME . ' ' . "{$timestamp}:{$this->accountId}:{$requestId}:{$signature}";
 
     $this->assertEquals($expects, $auth->authHeader);
 
@@ -156,19 +159,18 @@ class AuthSigningTest extends \AuthTests\Base
   }
 
 
-  private function getSignature($str, $key)
+  private function getSignature($strToSign, $signingKey)
   {
 
     # Signature = Base64( HMAC-SHA-256( StringToSign, SigningKey ) )
-    return base64_encode(hash_hmac('sha256', $str, $key, true));
+    return base64_encode(hash_hmac('sha256', $strToSign, $signingKey, true));
 
   }
 
 
-  private function forRequest($auth, $method = '')
+  private function forRequest($auth, $method)
   {
 
-    $method = $method ?: 'GET';
     $account = $this->getAccount();
     $url = $this->getUrl();
     return $auth->forRequest($account, $method, $url, $this->xheaders);

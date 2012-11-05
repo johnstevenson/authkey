@@ -10,6 +10,7 @@ class Auth
   public $accountId = '';
   public $accountKey = '';
   public $authHeader = '';
+  public $requestId = '';
 
   public $errorCode = '';
   public $errorMsg = '';
@@ -53,7 +54,7 @@ class Auth
   public function forRequest(array $credentials, $method, $url, array $xheaders)
   {
 
-    $this->init();
+    $this->init(true);
 
     $this->method = strtoupper($method);
 
@@ -69,6 +70,7 @@ class Auth
 
     $this->path = Utils::get($parts, 'path', '/');
     $this->query = Utils::get($parts, 'query', '');
+    $this->requestId = $this->getRequestId();
 
     return $this->commonFor($credentials, $xheaders);
 
@@ -84,7 +86,7 @@ class Auth
   */
   public function forResponse(array $credentials, array $xheaders)
   {
-    $this->init();
+    $this->init(false);
     return $this->commonFor($credentials, $xheaders);
   }
 
@@ -108,11 +110,11 @@ class Auth
   public function fromRequest(array $server, $optional = false)
   {
 
-    $this->init();
+    $this->init(true);
 
-    $authKey = $this->makeHttpPrefix($this->config['name']);
+    $headerName = $this->makeHttpPrefix($this->config['name']);
 
-    if (!$this->commonFrom($server, $authKey, $optional))
+    if (!$this->commonFrom($server, $headerName, true, $optional))
     {
       return $optional;
     }
@@ -134,23 +136,23 @@ class Auth
   *
   * Checks that we have an auth header, which is parsed to retrieve the
   * client's accountId. If optional is true, then the client allows
-  * unsigned responses, otherwise the function will fail without
-  * this value.
+  * unsigned responses, otherwise the function will fail if the
+  * response is unsigned.
   *
-  * The following properties are set:
+  * The following public properties are set:
   * - authHeader, accountId, signature, xheaders
-  *   *
   *
-  * @param array $server The server request headers ($_SERVER)
+  *
+  * @param array $headers The response headers
   * @param boolean $optional Whether an auth header is optional
   * @return boolean
   */
   public function fromResponse(array $headers, $optional = true)
   {
 
-    $this->init();
+    $this->init(false);
 
-    if (!$this->commonFrom($headers, $this->config['name'], $optional))
+    if (!$this->commonFrom($headers, $this->config['name'], false, $optional))
     {
       return $optional;
     }
@@ -304,10 +306,12 @@ class Auth
 
 
   /**
-  * Sets all properties (except config and prefix) to their default value
+  * Sets all properties (except config and prefix) to their default value.
   *
+  *
+  * @param bool $start Whether we are starting a new sequence
   */
-  private function init()
+  private function init($start)
   {
 
     $this->method = '';
@@ -322,6 +326,11 @@ class Auth
     $this->xheaders = array();
     $this->timestamp = 0;
     $this->signature = '';
+
+    if ($start)
+    {
+      $this->requestId = '';
+    }
 
   }
 
@@ -346,17 +355,17 @@ class Auth
   }
 
 
-  private function commonFrom(array $headers, $authKey, $optional)
+  private function commonFrom(array $headers, $name, $server, $optional)
   {
 
-    $headerName = $this->config['name'] . ' header';
+    $headerError = $this->config['name'] . ' header';
 
-    if (!isset($headers[$authKey]))
+    if (!isset($headers[$name]))
     {
 
       if (!$optional)
       {
-        $msg = $headerName . ' is missing';
+        $msg = $headerError . ' is missing';
         $this->setError(self::ERR_MISSING, $msg);
       }
 
@@ -365,7 +374,7 @@ class Auth
     }
     else
     {
-      $auth = trim($headers[$authKey]);
+      $auth = trim($headers[$name]);
       $this->authHeader = $auth;
     }
 
@@ -375,33 +384,47 @@ class Auth
     }
     else
     {
-      $msg = $headerName . ' malformed, missing scheme: ' . $this->config['scheme'];
+      $msg = $headerError . ' malformed, missing scheme: ' . $this->config['scheme'];
       $this->setError(self::ERR_INVALID, $msg);
 
       return false;
     }
 
+    $count = 4;
     $parts = explode(':', $auth);
 
-    if (count($parts) !== 3)
+    if (count($parts) !== $count)
     {
-      $msg = $headerName . ' malformed: not enough elements';
+      $msg = $headerError . ' malformed: not enough elements';
       $this->setError(self::ERR_INVALID, $msg);
 
-      return $errorRes;
+      return false;
+    }
+
+    $missing = array('Timestamp', 'AccountId', 'RequestId', 'Signature');
+
+    for ($i = 0; $i < $count; ++ $i)
+    {
+
+      if (!$parts[$i])
+      {
+        $msg = $headerError . ' malformed: ' . $missing[$i] . ' is missing';
+        $this->setError(self::ERR_INVALID, $msg);
+
+        return false;
+      }
+
     }
 
     $this->timestamp = $parts[0];
     $this->accountId = $parts[1];
-    $this->signature = $parts[2];
 
-    if (!$this->accountId || !$this->signature)
+    if ($server)
     {
-      $msg = $headerName . ' malformed: not enough elements';
-      $this->setError(self::ERR_INVALID, $msg);
-
-      return false;
+      $this->requestId = $parts[2];
     }
+
+    $this->signature = $parts[3];
 
     return true;
 
@@ -482,7 +505,7 @@ class Auth
     $this->signature = $this->sign();
 
     $str = $this->config['name'] . ': ' . $this->config['scheme'] . ' ';
-    $str .= "{$this->timestamp}:{$this->accountId}:{$this->signature}";
+    $str .= "{$this->timestamp}:{$this->accountId}:{$this->requestId}:{$this->signature}";
 
     $this->authHeader = $str;
 
@@ -497,9 +520,9 @@ class Auth
   private function sign()
   {
 
-    $str = $this->getStringToSign();
-    $key = $this->getSigningKey($this->accountKey, $this->timestamp);
-    return base64_encode(hash_hmac('sha256', $str, $key, true));
+    $strToSign = $this->getStringToSign();
+    $signingKey = $this->getSigningKey($this->accountKey, $this->timestamp);
+    return base64_encode(hash_hmac('sha256', $strToSign, $signingKey, true));
 
   }
 
@@ -514,6 +537,7 @@ class Auth
     $this->addXHeaders($subject, true);
     $subject[] = $this->config['scheme'];
     $subject[] = $this->timestamp;
+    $subject[] = $this->requestId;
 
     return implode("\n", $subject);
 
@@ -823,6 +847,31 @@ class Auth
   private function makeHttpPrefix($value)
   {
     return 'HTTP_' . strtoupper(strtr($value, '-', '_'));
+  }
+
+
+  /**
+  * Creates a "unique" requestId
+  *
+  */
+  private function getRequestId()
+  {
+
+    $serverId = '';
+
+    if (isset($_SERVER))
+    {
+      $serverId = Utils::get($_SERVER, 'SERVER_ADDR');
+    }
+
+    if (!$serverId)
+    {
+      $serverId = mt_rand();
+    }
+
+    $str = $serverId . uniqid(mt_rand(), true);
+    return base64_encode(sha1($str, true));
+
   }
 
 
